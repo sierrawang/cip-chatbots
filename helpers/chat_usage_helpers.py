@@ -1,5 +1,8 @@
 import pandas as pd
-from rosters_helpers import get_experiment_roster
+
+import sys
+sys.path.insert(1, '../download_scripts')
+from get_experiment_roster import load_experiment_roster
 
 # Return a dataframe of all chat messages
 def get_chat_messages():
@@ -9,7 +12,7 @@ def get_chat_messages():
 def get_sent_message():
     chat_messages = get_chat_messages()
     authors = chat_messages['authorId'].unique()
-    experiment_roster = get_experiment_roster()
+    experiment_roster = load_experiment_roster()
     return experiment_roster[experiment_roster['user_id'].isin(authors)]
 
 # Return the messages sent by the given user

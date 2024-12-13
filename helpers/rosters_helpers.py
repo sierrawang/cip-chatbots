@@ -1,5 +1,9 @@
 import pandas as pd
 
+import sys
+sys.path.insert(1, '../download_scripts')
+from get_experiment_roster import get_experiment_roster
+
 # These were the constants used in the frontend to represent the different chat types.
 # These are the chat types that are in the experiment roster.
 NO_CHAT = 0
@@ -17,10 +21,6 @@ IDE_PERSONIFIED = 10
 # Return the demographic data of the students
 def get_student_data():
     return pd.read_csv('../downloaded_data/student_data.csv')
-
-# Return a dataframe of the experiment roster (user_id and chatType)
-def get_experiment_roster():
-    return pd.read_csv('../downloaded_data/experiment_roster.csv')
 
 def get_no_chat_students():
     experiment_roster = get_experiment_roster()
