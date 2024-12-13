@@ -3,3 +3,5 @@ downloaded_data/
 downloaded_data_old/
 utils/
 */__pycache__/
+experiment_roster/
+parsed_data/
