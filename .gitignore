@@ -1,2 +1,5 @@
 .DS_Store
 downloaded_data/
+downloaded_data_old/
+utils/
+*/__pycache__/
