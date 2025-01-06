@@ -61,7 +61,7 @@ def graph_chattype_vs_classification(dfs):
 
     # Initialize the plot
     fig, ax = plt.subplots()
-    bar_width = 0.4
+    bar_width = 0.75
     opacity = 0.5
     index = range(len(dfs))
     
@@ -99,9 +99,9 @@ def graph_chattype_vs_classification(dfs):
         print(f'{classification}: {classification_percents}')
 
         # Add labels to the bars
-        for i, (bar, label) in enumerate(zip(bars, classification_percents)):
-            height = bottom_accumulate[i] + bar.get_height() / 2
-            ax.text(bar.get_x() + bar.get_width() / 2, height, f'{label:.3f}%', ha='center', va='bottom')
+        # for i, (bar, label) in enumerate(zip(bars, classification_percents)):
+        #     height = bottom_accumulate[i] + bar.get_height() / 2
+        #     ax.text(bar.get_x() + bar.get_width() / 2, height, f'{label:.3f}%', ha='center', va='bottom')
         
         # Update the bottom of the bars
         bottom_accumulate += np.array(classification_percents)

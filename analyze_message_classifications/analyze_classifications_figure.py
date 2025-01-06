@@ -6,9 +6,10 @@ import sys
 
 sys.path.insert(1, '../helpers')
 from chat_usage_helpers import get_chat_messages
-from rosters_helper import get_basic_personified_students, get_basic_nonpersonified_students, get_ide_personified_students, get_ide_nonpersonified_students
-from course_completion_helpers import get_student_assignment_completion, get_student_lesson_completion, get_num_messages_sent_for_user
+from rosters_helpers import get_basic_personified_students, get_basic_nonpersonified_students, get_ide_personified_students, get_ide_nonpersonified_students, get_community_personified_students, get_community_nonpersonified_students, get_grounded_personified_students, get_grounded_nonpersonified_students
+from course_completion_helpers import get_student_assignment_completion, get_student_lesson_completion
 from message_classifications_helpers import get_message_classifications, get_percent_messages_sent_are_classification
+from chat_usage_helpers import get_num_messages_sent_for_user
 
 # Return two rosters:
 # - one containing the students who sent at least one message of the given message_type
@@ -141,7 +142,7 @@ def graph_splits_within_splits(df, message_type, engagement_function, metric_nam
     plt.ylabel(metric_name)
     plt.ylim(0, 1)
     plt.title(f'{metric_name} by Number of Messages Sent and Whether the User Asked a {message_type} Question')
-    plt.legend()
+    # plt.legend()
     plt.show()
 
 def get_all_basic_groups():
@@ -152,6 +153,29 @@ def get_all_basic_groups():
 
     all_basic_groups = pd.concat([basic_personified_students, basic_nonpersonified_students, ide_personified_students, ide_nonpersonified_students])
     return all_basic_groups
+
+def get_all_groups_except_buttons():
+    basic_personified_students = get_basic_personified_students()
+    basic_nonpersonified_students = get_basic_nonpersonified_students()
+    ide_personified_students = get_ide_personified_students()
+    ide_nonpersonified_students = get_ide_nonpersonified_students()
+    community_personified_students = get_community_personified_students()
+    community_nonpersonified_students = get_community_nonpersonified_students()
+    grounded_personified_students = get_grounded_personified_students()
+    grounded_nonpersonified_students = get_grounded_nonpersonified_students()
+
+    all_groups = pd.concat([basic_personified_students, basic_nonpersonified_students, 
+                            ide_personified_students, ide_nonpersonified_students, 
+                            community_personified_students, community_nonpersonified_students, 
+                            grounded_personified_students, grounded_nonpersonified_students])
+    return all_groups
+
+def get_ide_groups():
+    ide_personified_students = get_ide_personified_students()
+    ide_nonpersonified_students = get_ide_nonpersonified_students()
+
+    ide_groups = pd.concat([ide_personified_students, ide_nonpersonified_students])
+    return ide_groups
 
 if __name__ == '__main__':
     df = get_all_basic_groups()

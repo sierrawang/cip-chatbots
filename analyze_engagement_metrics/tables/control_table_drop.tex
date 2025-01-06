@@ -1,0 +1,39 @@
+\begin{table}
+\centering
+\begin{tabularx}{\columnwidth}{l X X X}
+\toprule
+\textbf{Metric} & \textbf{Baseline} & \textbf{Control} & \textbf{p-value} \\
+\midrule
+\multicolumn{4}{l}{\textbf{Chat Usage}} \\
+Sent Message & \textbf{5.6\%} & 0.0\% & 0.000 \\
+Message Count & 5.7 & \textbf{nan} & 0.000 \\
+\midrule
+\multicolumn{4}{l}{\textbf{Course Completion}} \\
+Assn. Completion & 60.8\% & \textbf{61.4\%} & 0.763 \\
+Lssn. Completion & 67.8\% & \textbf{67.9\%} & 0.950 \\
+Sect. Attendance & 69.6\% & \textbf{70.6\%} & 0.535 \\
+\midrule
+\multicolumn{4}{l}{\textbf{Forum Activity}} \\
+Made Post & 45.3\% & \textbf{46.0\%} & 0.770 \\
+Post Count & \textbf{2.7} & 2.6 & 0.548 \\
+\midrule
+\multicolumn{4}{l}{\textbf{Exam Performance}} \\
+Took Exam & 23.0\% & \textbf{24.1\%} & 0.587 \\
+Exam Score 1 & 77.5\% & \textbf{80.9\%} & 0.121 \\
+Exam Score 2 & 17.8\% & \textbf{19.5\%} & 0.321 \\
+\midrule
+\multicolumn{4}{l}{\textbf{Confounds}} \\
+Female & \textbf{50.1\%} & 45.0\% & 0.037 \\
+Age & 32.4 & \textbf{34.6} & 0.000 \\
+In USA & 29.5\% & \textbf{34.4\%} & 0.032 \\
+Changed section & 0.0\% & \textbf{0.0\%} & 0.000 \\
+IDE & 0.0\% & \textbf{0.0\%} & 0.000 \\
+Agent & 52.1\% & \textbf{100.0\%} & 0.000 \\
+RAG & 0.0\% & \textbf{0.0\%} & 0.000 \\
+Community & 0.0\% & \textbf{0.0\%} & 0.000 \\
+Buttons & 0.0\% & \textbf{0.0\%} & 0.000 \\
+\bottomrule
+\end{tabularx}
+\caption{Compares students with a chatbot to those without a chatbot. For each comparison, the larger value is bold, and the p-value reflects the statistical significance of the differences.}
+\label{tab:control-table}
+\end{table}

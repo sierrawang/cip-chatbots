@@ -51,15 +51,20 @@ def get_diagnostic_scores(df, impute_val=-1):
 
     return results
 
+# Return 1 if the student took the diagnostic, 0 otherwise
+def get_student_diagnostic_participation(user_id):
+    if os.path.exists(f'../downloaded_data/diagnostic/{user_id}.json'):
+        return 1
+    else:
+        return 0
+
 # Return a list of the diagnostic participation for each student in the given df 
 # (1 if they took the diagnostic, 0 otherwise)
 def get_diagnostic_participation(df):
     user_ids = df['user_id'].unique()
     results = []
     for user_id in user_ids:
-        # Check if the user has taken the diagnostic (../downloaded_data/diagnostic/{user_id}.json exists)
-        if os.path.exists(f'../downloaded_data/diagnostic/{user_id}.json'):
-            results.append(1)
-        else:
-            results.append(0)
+        # Check if the user has taken the diagnostic 
+        # (../downloaded_data/diagnostic/{user_id}.json exists)
+        results.append(get_student_diagnostic_participation(user_id))
     return results

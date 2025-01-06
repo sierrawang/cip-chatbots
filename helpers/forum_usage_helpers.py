@@ -1,13 +1,22 @@
 import pandas as pd
+import os
 
+# Return the forum posts for the given user on the given forum
 def get_forum_posts_for_user_on_forum(user_id, post_type, forum_id):
-    # Get the forum posts for this section
-    forum_posts = pd.read_csv(f'../downloaded_data/forum_data/{forum_id}_{post_type}.csv')
+    forum_filename = f'../downloaded_data/forum_data/{forum_id}_{post_type}.csv'
+    if not os.path.exists(forum_filename):
+        print(f"File {forum_filename} does not exist")
+        
+        # Return an empty dataframe
+        return pd.DataFrame()
+    else:
+        # Get the forum posts for this section
+        forum_posts = pd.read_csv(f'../downloaded_data/forum_data/{forum_id}_{post_type}.csv')
 
-    # Get the forum posts by this user
-    user_forum_posts = forum_posts[forum_posts['user_id'] == user_id]
+        # Get the forum posts by this user
+        user_forum_posts = forum_posts[forum_posts['user_id'] == user_id]
 
-    return user_forum_posts
+        return user_forum_posts
 
 def get_num_forum_posts_for_user_on_forum(user_id, post_type, forum_id):
     # Get the forum posts by this user
@@ -42,15 +51,18 @@ def get_num_forum_posts(df, post_type, experiment_roster, include_all=True):
             results.append(num_posts)
     return results
 
+# Return a 1 if the user posted on the forum, and a zero otherwise
+def get_user_made_post(user_id, post_type, experiment_roster):
+    num_posts = get_num_forum_posts_for_user(user_id, post_type, experiment_roster)
+    if num_posts > 0:
+        return 1
+    else:
+        return 0
+
 # Return a list of whether each student posted on the forum
 def get_forum_participation(df, post_type, experiment_roster):
     user_ids = df['user_id'].unique()
     results = []
     for user_id in user_ids:
-        # Check if the user posted on the forum
-        num_posts = get_num_forum_posts_for_user(user_id, post_type, experiment_roster)
-        if num_posts > 0:
-            results.append(1)
-        else:
-            results.append(0)
+        results.append(get_user_made_post(user_id, post_type, experiment_roster))
     return results

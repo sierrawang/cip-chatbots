@@ -26,6 +26,9 @@ def get_role(user_id, db):
     else:
         return None
 
+# StJ796DOypW27ulxc3ODzWGaZ2i2 put their birthday as 2-29-1983, I changed it to 3-1-1983
+# QCNiw4pqctSCiEmDDS8lK3jwrME3 put their birthday as 4-31-1961, I changed it to 5-1-1961
+# cvuSDQeUGRahxy6bJ63c4c9tZ2v1 did not put their birthday.
 def get_age(user_id, users_collection, role):
     user_doc = None
     if role == 'student':
