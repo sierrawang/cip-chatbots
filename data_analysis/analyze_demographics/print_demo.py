@@ -1,9 +1,5 @@
-import sys
-sys.path.insert(1, '../helpers')
-from rosters_helpers import get_student_data
-
-sys.path.insert(1, '../download_scripts')
-from get_experiment_roster import load_experiment_roster
+from data_analysis.helpers.rosters_helpers import get_student_data
+from download_scripts.get_experiment_roster import load_experiment_roster
 
 def print_num_students(student_data):
     print(len(student_data), 'students')

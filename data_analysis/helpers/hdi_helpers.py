@@ -2,7 +2,10 @@ import pandas as pd
 
 # HDI data download from https://hdr.undp.org/data-center/human-development-index#/indicies/HDI
 # on May 23, 2024
-un_data = pd.read_excel('../HDR23-24_Statistical_Annex_HDI_Table.xlsx', skiprows=5, header=0)
+import os
+current_dir = os.path.dirname(__file__)
+file_path = os.path.join(current_dir, 'HDR23-24_Statistical_Annex_HDI_Table.xlsx')
+un_data = pd.read_excel(file_path, skiprows=5, header=0)
 
 def convert_country_name(country):
     switcher = {

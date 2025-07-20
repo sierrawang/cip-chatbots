@@ -1,11 +1,17 @@
 import pandas as pd
+import os
 
-from chat_usage_helpers import get_messages_sent_for_user
+from data_analysis.helpers.chat_usage_helpers import get_messages_sent_for_user
 
 message_classifications = [ 'HOMEWORK', 'CONCEPTUAL', 'AI', 'GREETING', 'GRATITUDE', 'OTHER' ]
 
+def get_relative_filepath(filepath):
+    current_dir = os.path.dirname(__file__)
+    filepath = os.path.join(current_dir, filepath)
+    return filepath
+
 def get_message_classifications():
-    return pd.read_csv('../parsed_data/message_classifications.csv')
+    return pd.read_csv(get_relative_filepath('../../parsed_data/message_classifications.csv'))
 
 def get_number_messages_sent_are_classification(user_id, classification, classified_messages, chat_messages):
     user_messages = get_messages_sent_for_user(user_id, chat_messages)

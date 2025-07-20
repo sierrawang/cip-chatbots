@@ -3,17 +3,53 @@ import csv
 from tabulate import tabulate
 import pandas as pd
 import statsmodels.formula.api as smf
-import sys
-sys.path.insert(1, '../helpers')
-from rosters_helpers import get_student_data, NO_CHAT, GROUNDED, GROUNDED_PERSONIFIED, BASIC, BASIC_PERSONIFIED, COMMUNITY, COMMUNITY_PERSONIFIED, BUTTONS, BUTTONS_PERSONIFIED, IDE, IDE_PERSONIFIED
-from course_completion_helpers import get_student_assignment_completion, get_student_lesson_completion, get_student_section_attendance
-from forum_usage_helpers import get_num_forum_posts_for_user, get_user_made_post
-from chat_usage_helpers import get_num_messages_sent_for_user, get_chat_messages, get_user_sent_message
-from diagnostic_helpers import get_student_diagnostic_participation, get_student_diagnostic_score
-from hdi_helpers import get_hdi
+import os
 
-sys.path.insert(1, '../download_scripts')
-from get_experiment_roster import load_experiment_roster
+from data_analysis.helpers.rosters_helpers import (
+    get_student_data,
+    NO_CHAT, GROUNDED, GROUNDED_PERSONIFIED, BASIC, BASIC_PERSONIFIED,
+    COMMUNITY, COMMUNITY_PERSONIFIED, BUTTONS, BUTTONS_PERSONIFIED,
+    IDE, IDE_PERSONIFIED
+)
+
+from data_analysis.helpers.course_completion_helpers import (
+    get_student_assignment_completion,
+    get_student_lesson_completion,
+    get_student_section_attendance
+)
+
+from data_analysis.helpers.forum_usage_helpers import (
+    get_num_forum_posts_for_user,
+    get_user_made_post
+)
+
+from data_analysis.helpers.chat_usage_helpers import (
+    get_num_messages_sent_for_user,
+    get_chat_messages,
+    get_user_sent_message
+)
+
+from data_analysis.helpers.diagnostic_helpers import (
+    get_student_diagnostic_participation,
+    get_student_diagnostic_score
+)
+
+from data_analysis.helpers.hdi_helpers import get_hdi
+
+from download_scripts.get_experiment_roster import load_experiment_roster
+
+
+# import sys
+# sys.path.insert(1, '../helpers')
+# from rosters_helpers import get_student_data, NO_CHAT, GROUNDED, GROUNDED_PERSONIFIED, BASIC, BASIC_PERSONIFIED, COMMUNITY, COMMUNITY_PERSONIFIED, BUTTONS, BUTTONS_PERSONIFIED, IDE, IDE_PERSONIFIED
+# from course_completion_helpers import get_student_assignment_completion, get_student_lesson_completion, get_student_section_attendance
+# from forum_usage_helpers import get_num_forum_posts_for_user, get_user_made_post
+# from chat_usage_helpers import get_num_messages_sent_for_user, get_chat_messages, get_user_sent_message
+# from diagnostic_helpers import get_student_diagnostic_participation, get_student_diagnostic_score
+# from hdi_helpers import get_hdi
+
+# sys.path.insert(1, '../download_scripts')
+# from get_experiment_roster import load_experiment_roster
 
 def get_chatbot_placement(chat_type):
     if chat_type == NO_CHAT:
@@ -160,12 +196,17 @@ def get_control(chat_type):
     else:
         return 0
 
+def get_relative_filename(output_filename='../../parsed_data/demo_data.csv'):
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, output_filename)
+    return file_path
+
 # Output a csv with all of the data needed to perform the mixed methods analysis
-def make_csv(output_filename='../parsed_data/demo_data.csv'):
+def make_csv(output_filename):
     experiment_roster = load_experiment_roster()
     student_data = get_student_data()
     chat_messages = get_chat_messages()
-    section_attendance = pd.read_csv("../downloaded_data/section_progress.csv")
+    section_attendance = pd.read_csv(get_relative_filename("../../downloaded_data/section_progress.csv"))
 
     fieldnames = ['user_id', 
                   'Female', 'Age', 'In_USA', 'HDI', 'IDE', 'Agent', 
@@ -317,7 +358,7 @@ def get_chat_type_name(chat_type):
 def output_all_regressions_in_one_table(chat_type):
     # Load the data
     # This dataframe has a row for each student, and columns for each of the variables we want to analyze
-    true_data = pd.read_csv('../parsed_data/demo_data.csv')
+    true_data = pd.read_csv(get_relative_filename('../../parsed_data/demo_data.csv'))
 
     # Normalize the Age column
     true_data['Age'] = (true_data['Age'] - true_data['Age'].mean()) / true_data['Age'].std()
@@ -327,7 +368,7 @@ def output_all_regressions_in_one_table(chat_type):
 
     # Filter to only students with this chat type
     true_data = true_data[true_data['Chat_Type'] == chat_type]
-    output_filename=f'./tables/all.tex'
+    output_filename=get_relative_filename(f'./tables/all.tex')
 
     # Define the independent variables
     independent_variables = ['Female', 'Age', 'HDI'] #'In_USA', 
@@ -483,7 +524,7 @@ if __name__ == '__main__':
                   GROUNDED, GROUNDED_PERSONIFIED, 
                   COMMUNITY, COMMUNITY_PERSONIFIED, 
                   BUTTONS,  BUTTONS_PERSONIFIED]
-    data = pd.read_csv('../parsed_data/demo_data.csv')
+    data = pd.read_csv(get_relative_filename('../../parsed_data/demo_data.csv'))
 
     # Normalize the Age and HDI columns
     data['Age'] = (data['Age'] - data['Age'].mean()) / data['Age'].std()
@@ -491,4 +532,5 @@ if __name__ == '__main__':
 
     # for evaluation_metric in evaluation_metrics:
     # output_filename=f'./tables/{evaluation_metric}.tex'
-    output_table_for_metric(chat_types, data, './tables/evaluation_metrics.tex')
+    output_table_for_metric(chat_types, data, 
+                            get_relative_filename('./tables/evaluation_metrics.tex'))

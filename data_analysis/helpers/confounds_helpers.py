@@ -1,8 +1,6 @@
-from rosters_helpers import NO_CHAT, IDE_PERSONIFIED, IDE, GROUNDED, GROUNDED_PERSONIFIED, BUTTONS, BUTTONS_PERSONIFIED, COMMUNITY, COMMUNITY_PERSONIFIED
+from data_analysis.helpers.rosters_helpers import NO_CHAT, IDE_PERSONIFIED, IDE, GROUNDED, GROUNDED_PERSONIFIED, BUTTONS, BUTTONS_PERSONIFIED, COMMUNITY, COMMUNITY_PERSONIFIED
 
-import sys
-sys.path.insert(1, '../experiment_roster/scripts')
-from create_experiment_roster import consistent_section_leader
+from experiment_roster.scripts.create_experiment_roster import consistent_section_leader
 
 def get_sl_id_from_stored(user_id, initial_section_membership):
     user_row = initial_section_membership[initial_section_membership['user_id'] == user_id]

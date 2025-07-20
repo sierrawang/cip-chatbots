@@ -7,13 +7,10 @@ import seaborn as sns
 from scipy import stats
 import math
 
-import sys
-sys.path.insert(1, '../download_scripts')
-from get_experiment_roster import load_experiment_roster
-sys.path.append('../helpers')
-from hdi_helpers import get_hdi
-from chat_usage_helpers import get_chat_messages, get_num_messages_sent_for_user
-from rosters_helpers import get_student_data, get_experiment_groups, get_ide_personified_students, get_ide_nonpersonified_students, get_buttons_personified_students, get_buttons_nonpersonified_students, get_community_personified_students, get_community_nonpersonified_students, get_basic_personified_students, get_basic_nonpersonified_students, get_no_chat_students
+from download_scripts.get_experiment_roster import load_experiment_roster
+from data_analysis.helpers.hdi_helpers import get_hdi
+from data_analysis.helpers.chat_usage_helpers import get_chat_messages, get_num_messages_sent_for_user
+from data_analysis.helpers.rosters_helpers import get_student_data, get_experiment_groups, get_ide_personified_students, get_ide_nonpersonified_students, get_buttons_personified_students, get_buttons_nonpersonified_students, get_community_personified_students, get_community_nonpersonified_students, get_basic_personified_students, get_basic_nonpersonified_students, get_no_chat_students
 
 # Return a list of the number of messages sent by each student from the given country
 def get_messages_for_country(country, student_data, chat_messages, key='country'):
@@ -206,13 +203,19 @@ def output_latex_table(results_df, output_file='avg_messages_country.tex'):
 
 if __name__ == '__main__':
     # Get the averages by country
-    # results_df = avg_num_messages_by_country()
-    results_df = avg_num_messages_by_gender()
-
+    results_df = avg_num_messages_by_country()
+    
     # Plot the choropleth map with labels
-    # plot_choropleth_with_labels(results_df)
+    plot_choropleth_with_labels(results_df)
 
     # Plot the bar chart
-    # bar_chart(results_df)
+    bar_chart(results_df)
 
-    output_latex_table(results_df, 'avg_messages_gender.tex')
+    # Save the country usage table
+    output_latex_table(results_df, './tables/avg_messages_country.tex')
+
+    # Compute and save a gender usage table
+    results_df = avg_num_messages_by_gender()
+    output_latex_table(results_df, './tables/avg_messages_gender.tex')
+
+

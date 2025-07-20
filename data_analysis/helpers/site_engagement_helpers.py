@@ -2,10 +2,16 @@ import pandas as pd
 import os
 import numpy as np
 
+def get_relative_filepath(filepath):
+    current_dir = os.path.dirname(__file__)
+    filepath = os.path.join(current_dir, filepath)
+    return filepath
+
 # Return the average number of times this student ran their code
 # for an assignment
 def get_avg_runs_per_assignment_per_user(user_id):
-    ide_logs_filename = '../downloaded_data/ide_logs_data/' + user_id + '.csv'
+    ide_logs_filename = get_relative_filepath(
+        f'../../downloaded_data/ide_logs_data/{user_id}.csv')
     if os.path.exists(ide_logs_filename):
         ide_logs = pd.read_csv(ide_logs_filename)
 
@@ -31,7 +37,8 @@ def get_avg_runs_per_assignment_per_user(user_id):
 
 # Return the number of times this user visited the IDE according to the visit logs
 def get_num_ide_visits_per_user(user_id):
-    user_logs_filename = '../downloaded_data/visit_logs_data/' + user_id + '.csv'
+    user_logs_filename = get_relative_filepath(
+        '../../downloaded_data/visit_logs_data/' + user_id + '.csv')
     if os.path.exists(user_logs_filename):
         user_logs = pd.read_csv(user_logs_filename)
         ide_logs = user_logs[user_logs['path'].str.contains('/cip4/ide/')]
@@ -42,7 +49,8 @@ def get_num_ide_visits_per_user(user_id):
 
 # Return the number of times this user visited a lessons page
 def get_num_lesson_visits_per_user(user_id):
-    user_logs_filename = '../downloaded_data/visit_logs_data/' + user_id + '.csv'
+    user_logs_filename = get_relative_filepath(
+        '../../downloaded_data/visit_logs_data/' + user_id + '.csv')
     if os.path.exists(user_logs_filename):
         user_logs = pd.read_csv(user_logs_filename)
         lesson_logs = user_logs[user_logs['path'].str.contains('/cip4/learn/')]

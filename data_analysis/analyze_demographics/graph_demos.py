@@ -7,16 +7,19 @@ import plotly.graph_objects as go
 import seaborn as sns
 from scipy import stats
 import math
+import os
 
-import sys
-sys.path.insert(1, '../download_scripts')
-from get_experiment_roster import load_experiment_roster
-sys.path.append('../helpers')
-from hdi_helpers import get_hdi
-from chat_usage_helpers import get_chat_messages, get_num_messages_sent_for_user
-from rosters_helpers import get_student_data, get_experiment_groups, get_ide_personified_students, get_ide_nonpersonified_students, get_buttons_personified_students, get_buttons_nonpersonified_students, get_community_personified_students, get_community_nonpersonified_students, get_basic_personified_students, get_basic_nonpersonified_students, get_no_chat_students
-from course_completion_helpers import get_student_assignment_completion, get_student_lesson_completion, get_student_section_attendance
-from significance_helpers import bootstrap, bootstrap_difference_of_differences
+from download_scripts.get_experiment_roster import load_experiment_roster
+from data_analysis.helpers.hdi_helpers import get_hdi
+from data_analysis.helpers.chat_usage_helpers import get_chat_messages, get_num_messages_sent_for_user
+from data_analysis.helpers.rosters_helpers import get_student_data, get_experiment_groups, get_ide_personified_students, get_ide_nonpersonified_students, get_buttons_personified_students, get_buttons_nonpersonified_students, get_community_personified_students, get_community_nonpersonified_students, get_basic_personified_students, get_basic_nonpersonified_students, get_no_chat_students
+from data_analysis.helpers.course_completion_helpers import get_student_assignment_completion, get_student_lesson_completion, get_student_section_attendance
+from data_analysis.helpers.significance_helpers import bootstrap, bootstrap_difference_of_differences
+
+def get_relative_filepath(filepath):
+    current_dir = os.path.dirname(__file__)
+    filepath = os.path.join(current_dir, filepath)
+    return filepath
 
 def graph_demo_vs_metric(rosters, demo_metric, demo_fn, outcome_metric, outcome_fn):
     # Initialize the figure and axis
@@ -201,7 +204,8 @@ if __name__ == '__main__':
     get_age_fn = lambda user_id: get_student_age(user_id, student_data)
 
     # Define the outcome metric functions
-    section_attendance = pd.read_csv("../downloaded_data/section_progress.csv")
+    section_attendance = pd.read_csv(
+        get_relative_filepath("../../downloaded_data/section_progress.csv"))
     weeks = [0, 1, 2, 3, 4, 5]
     get_section_attendance_fn = lambda user_id: get_student_section_attendance(user_id, section_attendance, weeks)
     chat_messages = get_chat_messages()

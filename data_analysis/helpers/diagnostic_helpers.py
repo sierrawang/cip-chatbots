@@ -2,10 +2,16 @@ import json
 import os
 import numpy as np
 
+def get_relative_filepath(filepath):
+    current_dir = os.path.dirname(__file__)
+    filepath = os.path.join(current_dir, filepath)
+    return filepath
+
 # Return the diagnostic score for this student
 # If the student did not take the diagnostic, impute their score with impute_val (default 0)
 def get_student_diagnostic_score(user_id, impute_val=-1):
-    student_results_filename = f'../downloaded_data/diagnostic/{user_id}.json'
+    student_results_filename = get_relative_filepath(
+        f'../../downloaded_data/diagnostic/{user_id}.json')
     if os.path.exists(student_results_filename):
         # If the student took the diagnostic, calculate their score
         student_results = json.load(open(student_results_filename))
@@ -53,7 +59,8 @@ def get_diagnostic_scores(df, impute_val=-1):
 
 # Return 1 if the student took the diagnostic, 0 otherwise
 def get_student_diagnostic_participation(user_id):
-    if os.path.exists(f'../downloaded_data/diagnostic/{user_id}.json'):
+    user_file = get_relative_filepath(f'../../downloaded_data/diagnostic/{user_id}.json')
+    if os.path.exists(user_file):
         return 1
     else:
         return 0
@@ -65,6 +72,5 @@ def get_diagnostic_participation(df):
     results = []
     for user_id in user_ids:
         # Check if the user has taken the diagnostic 
-        # (../downloaded_data/diagnostic/{user_id}.json exists)
         results.append(get_student_diagnostic_participation(user_id))
     return results

@@ -2,12 +2,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-import sys
-sys.path.insert(1, '../helpers')
-from chat_usage_helpers import get_chat_messages
-from rosters_helpers import get_basic_personified_students, get_basic_nonpersonified_students, get_ide_personified_students, get_ide_nonpersonified_students
-from message_classifications_helpers import message_classifications, get_message_classifications
-from significance_helpers import bootstrap
+from data_analysis.helpers.chat_usage_helpers import get_chat_messages
+from data_analysis.helpers.rosters_helpers import get_basic_personified_students, get_basic_nonpersonified_students, get_ide_personified_students, get_ide_nonpersonified_students
+from data_analysis.helpers.message_classifications_helpers import message_classifications, get_message_classifications
+from data_analysis.helpers.significance_helpers import bootstrap
 
 plt.rcParams['font.family'] = 'Times New Roman'
 # plt.rcParams['font.size'] = 20
@@ -178,5 +176,5 @@ if __name__ == "__main__":
         'Lessons': pd.concat([get_basic_personified_students(), get_basic_nonpersonified_students()]),
     }
 
-    # graph_chattype_vs_classification(dfs)
+    graph_chattype_vs_classification(dfs)
     get_statistical_significance(dfs['IDE'], dfs['Lessons'])

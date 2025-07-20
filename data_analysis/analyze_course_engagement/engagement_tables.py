@@ -1,21 +1,21 @@
 import numpy as np
 import pandas as pd
+import os
 
-import sys
-sys.path.insert(1, '../download_scripts')
-from get_experiment_roster import load_experiment_roster
+from download_scripts.get_experiment_roster import load_experiment_roster
+from data_analysis.helpers.chat_usage_helpers import get_chat_messages, get_message_sent_results, get_num_messages_sent_results
+from data_analysis.helpers.rosters_helpers import get_basic_personified_students, get_basic_nonpersonified_students, get_ide_personified_students, get_ide_nonpersonified_students, get_student_data, get_no_chat_students, get_personified_students, get_nonpersonified_students
+from data_analysis.helpers.course_completion_helpers import get_assignment_completion, get_lesson_completion, get_section_attendance
+from data_analysis.helpers.diagnostic_helpers import  get_diagnostic_scores, get_diagnostic_participation
+from data_analysis.helpers.forum_usage_helpers import get_forum_participation, get_num_forum_posts
+from data_analysis.helpers.significance_helpers import bootstrap
+from data_analysis.helpers.confounds_helpers import get_female, get_age, get_in_usa, get_personified, get_changed_section, get_ide, get_rag, get_community, get_buttons
+from experiment_roster.scripts.create_experiment_roster import load_initial_section_membership, load_section_membership_checkpoints
 
-sys.path.insert(1, '../helpers')
-from chat_usage_helpers import get_chat_messages, get_message_sent_results, get_num_messages_sent_results
-from rosters_helpers import get_basic_personified_students, get_basic_nonpersonified_students, get_ide_personified_students, get_ide_nonpersonified_students, get_student_data, get_no_chat_students, get_personified_students, get_nonpersonified_students
-from course_completion_helpers import get_assignment_completion, get_lesson_completion, get_section_attendance
-from diagnostic_helpers import  get_diagnostic_scores, get_diagnostic_participation
-from forum_usage_helpers import get_forum_participation, get_num_forum_posts
-from significance_helpers import bootstrap
-from confounds_helpers import get_female, get_age, get_in_usa, get_personified, get_changed_section, get_ide, get_rag, get_community, get_buttons
-
-sys.path.insert(1, '../experiment_roster/scripts')
-from create_experiment_roster import load_initial_section_membership, load_section_membership_checkpoints
+def get_relative_filepath(filepath):
+    current_dir = os.path.dirname(__file__)
+    filepath = os.path.join(current_dir, filepath)
+    return filepath
 
 def get_results(roster1, roster2, engagement_fn, is_percent=False):
     # Calculate the mean of each group
@@ -58,6 +58,7 @@ def output_table(rosters, engagement_categories, caption, label, output_filename
 \\label{{{label}}}
 \\end{{table}}"""
     
+    output_filename = get_relative_filepath(output_filename)
     with open(output_filename, 'w') as f:
         f.write(table_str)
 
@@ -152,6 +153,12 @@ def load_engagement_metrics():
     return engagement_metrics
 
 if __name__ == '__main__':
+    # Compute the results with the original experiment groups (without dropping any students)
     control_table('./tables/control_table_complete.tex', 'tab:control-table-complete')
     agent_vs_tool_table('./tables/personification_table_complete.tex', 'tab:personification-table-complete')
     lessons_vs_ide_table('./tables/placement_table_complete.tex', 'tab:placement-table-complete')
+
+    # Compute the results after dropping students who may have been exposed to multiple experiment arms
+    control_table('./tables/control_table_drop.tex', 'tab:control-table-drop')
+    agent_vs_tool_table('./tables/personification_table_drop.tex', 'tab:personification-table-drop')
+    lessons_vs_ide_table('./tables/placement_table_drop.tex', 'tab:placement-table-drop')

@@ -2,14 +2,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-import sys
-
-sys.path.insert(1, '../helpers')
-from chat_usage_helpers import get_chat_messages
-from rosters_helpers import get_basic_personified_students, get_basic_nonpersonified_students, get_ide_personified_students, get_ide_nonpersonified_students, get_community_personified_students, get_community_nonpersonified_students, get_grounded_personified_students, get_grounded_nonpersonified_students
-from course_completion_helpers import get_student_assignment_completion, get_student_lesson_completion
-from message_classifications_helpers import get_message_classifications, get_percent_messages_sent_are_classification
-from chat_usage_helpers import get_num_messages_sent_for_user
+from data_analysis.helpers.chat_usage_helpers import get_chat_messages, get_num_messages_sent_for_user
+from data_analysis.helpers.rosters_helpers import get_basic_personified_students, get_basic_nonpersonified_students, get_ide_personified_students, get_ide_nonpersonified_students, get_community_personified_students, get_community_nonpersonified_students, get_grounded_personified_students, get_grounded_nonpersonified_students
+from data_analysis.helpers.course_completion_helpers import get_student_assignment_completion, get_student_lesson_completion
+from data_analysis.helpers.message_classifications_helpers import get_message_classifications, get_percent_messages_sent_are_classification
 
 # Return two rosters:
 # - one containing the students who sent at least one message of the given message_type

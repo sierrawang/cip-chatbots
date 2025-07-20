@@ -1,16 +1,15 @@
-import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
+import os
 from scipy import stats
-import random
+from data_analysis.helpers.hdi_helpers import get_hdi
+from data_analysis.helpers.chat_usage_helpers import get_chat_messages, get_sent_message, get_num_messages_sent_for_user, get_user_sent_message
+from data_analysis.helpers.rosters_helpers import get_student_data, get_experiment_groups
+from data_analysis.helpers.course_completion_helpers import get_student_assignment_completion, get_student_lesson_completion, get_student_section_attendance
 
-
-import sys
-sys.path.append('../helpers')
-from hdi_helpers import get_hdi
-from chat_usage_helpers import get_chat_messages, get_sent_message, get_num_messages_sent_for_user, get_user_sent_message
-from rosters_helpers import get_student_data, get_experiment_groups
-from course_completion_helpers import get_student_assignment_completion, get_student_lesson_completion, get_student_section_attendance
+def get_relative_filepath(filepath):
+    current_dir = os.path.dirname(__file__)
+    filepath = os.path.join(current_dir, filepath)
+    return filepath
 
 # Print out the correlation coefficient between HDI and the engagement metric
 def get_correlation_coefficient(group_name, eval_metric, hdis, results):
@@ -84,7 +83,8 @@ def analyze_hdi_vs_metric_for_all_groups(experiment_groups, engagement_functions
         print()
 
 def load_engagement_functions():
-    section_attendance = pd.read_csv("../downloaded_data/section_progress.csv")
+    filepath = get_relative_filepath("../../downloaded_data/section_progress.csv")
+    section_attendance = pd.read_csv(filepath)
     weeks=[0, 1, 2, 3, 4, 5]
     chat_messages = get_chat_messages()
     engagement_functions = {

@@ -2,10 +2,16 @@ from openai import OpenAI
 import json
 import random
 import time
+import os
+
+def get_relative_filepath(filepath):
+    current_dir = os.path.dirname(__file__)
+    filepath = os.path.join(current_dir, filepath)
+    return filepath
 
 # Return an OpenAI client
 def get_openai_client():
-    keys_filename = '../utils/openai_keys.json'
+    keys_filename = get_relative_filepath('../../utils/openai_keys.json')
     with open(keys_filename) as f:
         # Choose a random key from the provided keys
         keys = json.load(f)

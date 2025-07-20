@@ -1,12 +1,13 @@
 import pandas as pd
+import os
 
-import sys
-sys.path.insert(1, '../download_scripts')
-from get_experiment_roster import load_experiment_roster
+from download_scripts.get_experiment_roster import load_experiment_roster
 
 # Return a dataframe of all chat messages
 def get_chat_messages():
-    return pd.read_csv('../downloaded_data/chat_messages.csv')
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, '../../downloaded_data/chat_messages.csv')
+    return pd.read_csv(file_path)
 
 # Return a dataframe of all of the students who sent a message
 def get_sent_message():

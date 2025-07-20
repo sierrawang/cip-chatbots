@@ -1,13 +1,23 @@
 import json
 import os
 import pandas as pd
-from roadmap import all_assignments_in_order, all_lessons_in_order
+
+from data_analysis.helpers.roadmap import (
+    all_assignments_in_order, 
+    all_lessons_in_order
+)
+
+def get_relative_filepath(filepath):
+    current_dir = os.path.dirname(__file__)
+    filepath = os.path.join(current_dir, filepath)
+    return filepath
 
 # Return the percent of assignments completed by the given student
 def get_student_assignment_completion(user_id, assignments_list=all_assignments_in_order):
     # Retrieve all of the assignments completed by this student
     userAssns = []
-    student_assn_filename = f'../downloaded_data/assn_progress/{user_id}.json'
+    student_assn_filename = get_relative_filepath(
+        f'../../downloaded_data/assn_progress/{user_id}.json')
     if os.path.exists(student_assn_filename):
         userAssns = json.load(open(student_assn_filename))
 
@@ -39,7 +49,8 @@ def get_assignment_completion(df, assignments_list=all_assignments_in_order):
 def get_student_lesson_completion(user_id, lessons_list=all_lessons_in_order):
     # Retrieve all of the lessons completed by this student
     userLessons = []
-    student_lessons_filename = f'../downloaded_data/lessons_progress/{user_id}.json'
+    student_lessons_filename = get_relative_filepath(
+        f'../../downloaded_data/lessons_progress/{user_id}.json')
     if os.path.exists(student_lessons_filename):
         userLessons = json.load(open(student_lessons_filename))
 
@@ -109,7 +120,8 @@ def get_section_attendance(df, weeks=[0, 1, 2, 3, 4, 5], section_attendance=None
     studentIds = df['user_id'].tolist()
     results = []
     if section_attendance is None:
-        section_attendance = pd.read_csv("../downloaded_data/section_progress.csv")
+        section_attendance = pd.read_csv(
+            get_relative_filepath("../../downloaded_data/section_progress.csv"))
         
     for studentId in studentIds:
         # Compute the percent of sections attended by this student

@@ -1,9 +1,14 @@
 import pandas as pd
 import os
 
+def get_relative_filepath(filepath):
+    current_dir = os.path.dirname(__file__)
+    filepath = os.path.join(current_dir, filepath)
+    return filepath
+
 # Return the forum posts for the given user on the given forum
 def get_forum_posts_for_user_on_forum(user_id, post_type, forum_id):
-    forum_filename = f'../downloaded_data/forum_data/{forum_id}_{post_type}.csv'
+    forum_filename = get_relative_filepath(f'../../downloaded_data/forum_data/{forum_id}_{post_type}.csv')
     if not os.path.exists(forum_filename):
         print(f"File {forum_filename} does not exist")
         
@@ -11,7 +16,8 @@ def get_forum_posts_for_user_on_forum(user_id, post_type, forum_id):
         return pd.DataFrame()
     else:
         # Get the forum posts for this section
-        forum_posts = pd.read_csv(f'../downloaded_data/forum_data/{forum_id}_{post_type}.csv')
+        forum_posts = pd.read_csv(
+            get_relative_filepath(f'../../downloaded_data/forum_data/{forum_id}_{post_type}.csv'))
 
         # Get the forum posts by this user
         user_forum_posts = forum_posts[forum_posts['user_id'] == user_id]
