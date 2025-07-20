@@ -7,6 +7,7 @@ sys.path.insert(1, '../helpers')
 from chat_usage_helpers import get_chat_messages
 from rosters_helpers import get_basic_personified_students, get_basic_nonpersonified_students, get_ide_personified_students, get_ide_nonpersonified_students
 from message_classifications_helpers import message_classifications, get_message_classifications
+from significance_helpers import bootstrap
 
 plt.rcParams['font.family'] = 'Times New Roman'
 # plt.rcParams['font.size'] = 20
@@ -117,6 +118,53 @@ def graph_chattype_vs_classification(dfs):
     # plt.tight_layout()
     plt.show()
 
+
+# Return a dictionary where the keys are the classifications and the values are the number of messages
+# of that classification that users in the roster sent
+def get_verbose_distribution_for_roster(df, chat_messages, classified_messages):
+    classification_distribution = init_classification_distribution()
+    for index,row in df.iterrows():
+        user_id = row['user_id']
+        user_messages = get_user_messages(user_id, chat_messages)
+
+        for index,row in user_messages.iterrows():
+            messageId = row['messageId']
+            classification = classified_messages[classified_messages['messageId'] == messageId]['classification'].values[0]
+            classification_distribution[classification] += 1
+
+    return classification_distribution
+
+# Return a list wiith a 1 for every message of the given classification and a 0 for every other message
+def get_binary_classification_list(classification_distribution, classification):
+    binary_list = []
+    for classification_name in message_classifications:
+        if classification_name == classification:
+            # Add a 1 for every message of the given classification
+            binary_list += [1] * classification_distribution[classification_name]
+        else:
+            # Add a 0 for every other message
+            binary_list += [0] * classification_distribution[classification_name]
+    return binary_list
+
+# Create a bar graph where:
+# x-axis: chat type (categories)
+# y-axis: the percent of the messages in that chat type
+# Each bar should contain the percentage of messages that are 
+# classified as each classification for that chat type
+def get_statistical_significance(df1, df2):
+    classified_messages = get_message_classifications()
+    chat_messages = get_chat_messages()
+
+    # Get the message distribution for each df (chat type)
+    classification_distribution1 = get_verbose_distribution_for_roster(df1, chat_messages, classified_messages)
+    classification_distribution2 = get_verbose_distribution_for_roster(df2, chat_messages, classified_messages)
+
+    for classification in message_classifications:
+        binary_results1 = get_binary_classification_list(classification_distribution1, classification)
+        binary_results2 = get_binary_classification_list(classification_distribution2, classification)
+        results1_mean, results2_mean, pvalue = bootstrap(binary_results1, binary_results2)
+        print(f'{classification}: {results1_mean:.3f} vs {results2_mean:.3f} (p-value: {pvalue:.3f})')
+
 if __name__ == "__main__":
     # dfs = {
     #     'IDE/Agent': get_ide_personified_students(),
@@ -130,4 +178,5 @@ if __name__ == "__main__":
         'Lessons': pd.concat([get_basic_personified_students(), get_basic_nonpersonified_students()]),
     }
 
-    graph_chattype_vs_classification(dfs)
+    # graph_chattype_vs_classification(dfs)
+    get_statistical_significance(dfs['IDE'], dfs['Lessons'])

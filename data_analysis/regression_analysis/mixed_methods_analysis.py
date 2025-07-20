@@ -313,7 +313,7 @@ def output_all_mixed_methods_in_one_table(mixed_effects_data, fixed_effects, ran
         f.write(table)
     print(f"Table saved to {output_filename}.")
 
-def output_table():
+def output_mixed_effects_table():
     # Define all of the fixed effects that we are analyzing
     # These are either demographic characteristics, or chatbot features based 
     # on the student's experiment group
@@ -335,6 +335,160 @@ def output_table():
     # Output the results!
     output_all_mixed_methods_in_one_table(mixed_effects_data, fixed_effects, random_effect, dependent_variables, output_filename='./tables/mixed_methods_all.tex')
 
+def perform_regression_analysis(true_data, independent_variables, dv):
+    binary_dvs = ['Sent_Message', 'Made_Post', 'Took_Exam']
+    # count_dvs = ['Message_Count', 'Post_Count']
+    continuous_dvs = ['Assignment_Completion', 'Lesson_Completion', 'Section_Attendance', 'Exam_Score']
+
+    # Perform a regression analysis for each dependent variable and print the results
+    # Make a copy of the data
+    data = true_data.copy()
+
+    if dv == 'Message_Count':
+        # Drop the rows where the message count is <= 0
+        # These are the students who did not send a message
+        data = data[data[dv] > 0]
+
+        # Remove the control group since this dv is trivially 0 for them
+        data = data[data['Control'] == 0]
+        ivs = [iv for iv in independent_variables if iv != 'Control'] 
+
+        # Perform a Poisson regression since this is count data
+        formula = f"{dv} ~ " + " + ".join(ivs)
+        model = smf.poisson(formula=formula, data=data).fit(disp=False)
+        print(f"\n=== Poisson Regression for {dv} ===")
+        print(model.summary())
+        return model
+
+    elif dv == 'Sent_Message':
+        # Drop the control group since this dv is trivially 0 for them
+        data = data[data['Control'] == 0]
+        ivs = [iv for iv in independent_variables if iv != 'Control'] 
+
+        # Perform a logistic regression since this is binary data
+        formula = f"{dv} ~ " + " + ".join(ivs)
+        model = smf.logit(formula=formula, data=data).fit(disp=False)
+        print(f"\n=== Logistic Regression for {dv} ===")
+        print(model.summary())
+        return model
+
+    elif dv == 'Post_Count':
+        # Drop the rows where the post count is <= 0
+        # These are the students who did not make a post
+        data = data[data[dv] > 0]
+        # print(data.head())
+
+        # Perform a Poisson regression since this is count data
+        formula = f"{dv} ~ " + " + ".join(independent_variables)
+        model = smf.poisson(formula=formula, data=data).fit(disp=False)
+        print(f"\n=== Poisson Regression for {dv} ===")
+        print(model.summary())
+        return model
+
+    else:
+        # For all remaining dependent variables, we can use the full dataset
+        # and all independent variables
+
+        formula = f"{dv} ~ " + " + ".join(independent_variables)
+        
+        if dv in binary_dvs:
+            # Logistic regression for binary
+            model = smf.logit(formula=formula, data=data).fit(disp=False)
+            print(f"\n=== Logistic Regression for {dv} ===")
+            print(model.summary())
+            return model
+
+        elif dv in continuous_dvs:
+            # OLS for continuous
+            model = smf.ols(formula=formula, data=data).fit()
+            print(f"\n=== OLS for {dv} ===")
+            print(model.summary())
+            return model
+        else:
+            assert False, 'Unknown dependent variable!'
+
+def output_all_regressions_in_one_table(output_filename='./tables/regressions_all.tex'):
+    # Load the data
+    # This dataframe has a row for each student, and columns for each of the variables we want to analyze
+    true_data = pd.read_csv('../parsed_data/mixed_effects_data.csv')
+
+    # Normalize the Age column
+    true_data['Age'] = (true_data['Age'] - true_data['Age'].mean()) / true_data['Age'].std()
+
+    # Define the independent variables
+    demographic_covariates = ['Female', 'Age', 'In_USA'] 
+    primary_predictors = ['Agent', 'IDE', 'Community', 'RAG', 'Buttons', 'Control']
+    independent_variables = demographic_covariates + primary_predictors
+
+    # Define the dependent variables
+    dependent_variables = ['Sent_Message', 'Message_Count', 
+                           'Assignment_Completion', 'Lesson_Completion', 'Section_Attendance',
+                           'Made_Post', 'Post_Count', 
+                           'Took_Exam', 'Exam_Score']
+
+    # Initialize the table string
+    table = """\\begin{table*}[t]
+\\begin{center}
+\\begin{tabularx}{\\textwidth}{l"""
+
+    # Add a column for each independent variable
+    col_names = []
+    for iv in independent_variables:
+        table += "X"
+        col_names.append(iv.replace("_", " "))
+
+    table += "}\n"
+
+    # Add the header row
+    table += "\\toprule\n"
+    table += "Dependent Variable & " + " & ".join(col_names) + " \\\\\n"
+    table += "\\midrule\n"
+
+    # Add a row for each dependent variable
+    for dependent_variable in dependent_variables:
+        # Get the regression results
+        result = perform_regression_analysis(true_data, independent_variables, dependent_variable)
+
+        # Extract the relevant results
+        row_name = dependent_variable.replace("_", " ")
+        table += f"{row_name}"
+        
+        for iv in independent_variables:
+            coef = result.params.get(iv, float('nan'))
+            pval = result.pvalues.get(iv, float('nan'))
+
+            # Format the coefficient and p-value
+            direction = '+' if coef > 0 else '-'
+            rounded_coef = round(coef, 2)
+            abs_rounded_coef = abs(rounded_coef)
+
+            if pval < 0.001:
+                table += f" & {direction}{abs_rounded_coef} ***"
+            elif pval < 0.01:
+                table += f" & {direction}{abs_rounded_coef} **"
+            elif pval < 0.05:
+                table += f" & {direction}{abs_rounded_coef} *"
+            else:
+                table += f" & {direction}{abs_rounded_coef}"
+
+        table += f" \\\\\n"
+
+    # Add the bottom rule
+    table += "\\bottomrule\n"
+    table += "\\end{tabularx}\n"
+    table += "\\end{center}\n"
+    table += "\\caption{Regression model results for all dependent variables.}\n"
+    table += "\\label{tab:regression_results}\n"
+    table += "\\end{table*}\n"
+
+    # Save the table to a file
+    with open(output_filename, "w") as f:
+        f.write(table)
+    print(f"Table saved to {output_filename}.")
+
+
 if __name__ == '__main__':
     # make_csv()
-    output_table()
+    # output_mixed_effects_table()
+    # perform_regression_analysis()
+    output_all_regressions_in_one_table()
