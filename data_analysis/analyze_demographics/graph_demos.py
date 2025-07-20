@@ -211,11 +211,11 @@ if __name__ == '__main__':
     chat_messages = get_chat_messages()
     get_messages_fn = lambda user_id: get_num_messages_sent_for_user(user_id, chat_messages)
 
-    # LOOK INTO GENDER!!!
+    # LOOK INTO GENDER!
     gender_rosters = {
         'IDE': ide_students['user_id'],
         'Lessons': basic_students['user_id'],
-        'Control': control['user_id']
+        # 'Control': control['user_id']
     }
     graph_demo_vs_metric(gender_rosters, 'Gender', get_gender_fn, 'Assignment Completion', get_student_assignment_completion)
 

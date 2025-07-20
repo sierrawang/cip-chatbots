@@ -1,7 +1,7 @@
 import csv
 import json
 from tqdm import tqdm
-from data_analysis.analyze_message_classifications.system_prompt import SYSTEM_PROMPT
+from data_analysis.analyze_messages.system_prompt import SYSTEM_PROMPT
 from data_analysis.helpers.chat_usage_helpers import get_sent_message, get_chat_messages
 from data_analysis.helpers.openai_helper import get_openai_client, call_gpt
 
